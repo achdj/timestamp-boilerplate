@@ -26,11 +26,21 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api/:date", function(req, res) {
   var { date } = req.params;
-  var dateRec = new Date(date);
-  //var unixVal;
-  //var utcVal;
-  //res.json({unix: unixVal}, {utc: utcVal});
-  res.json({unix: dateRec});
+  if(date == null) {
+    var actuDate = new Date('now');
+    res.json({unix: actuDate});
+  }
+  else {
+    var dateRec = new Date(date);
+    if(dateRec == null) {
+      res.json({error: "Invalid Date"});
+    }
+    //var unixVal;
+    //var utcVal;
+    //res.json({unix: unixVal}, {utc: utcVal});
+    res.json({unix: dateRec});
+  }
+  
 });
 
 
