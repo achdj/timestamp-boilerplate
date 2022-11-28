@@ -24,23 +24,36 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get("/api/:date", function(req, res) {
+app.get("/api/:date?", function(req, res) {
   var { date } = req.params;
   if(date == null) {
-    var actuDate = new Date('now');
-    res.json({unix: actuDate});
+    var actuDate = new Date();
+    var newDateTimestamp = Date.parse(actuDate) // convert date to timpstampe
+    //var dateDay = actuDate.toLocaleString('en-us', {weekday:'short'}) // get day
+    var dateUtc = actuDate.toUTCString();
+    res.json({unix: newDateTimestamp, utc: dateUtc});
   }
   else {
-    var dateRec = new Date(date);
-    if(dateRec == null) {
-      res.json({error: "Invalid Date"});
+    let dateString = req.params.date;
+    if (!isNaN(Date.parse(dateString))) {
+      let dateObject = new Date(dateString);
+      res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString() });
+    } else if (/\d{5,}/.test(dateString)) {
+        let dateInt = parseInt(dateString);
+        res.json({ unix: dateInt, utc: new Date(dateInt).toUTCString() });
+    } else {
+      res.json({ error: "Invalid Date" });
     }
-    //var unixVal;
-    //var utcVal;
-    //res.json({unix: unixVal}, {utc: utcVal});
-    res.json({unix: dateRec});
   }
-  
+});
+
+//for null date value
+app.get("/api", function(req, res) {
+  var actuDate = new Date();
+  var newDateTimestamp = Date.parse(actuDate) // convert date to timpstampe
+  //var dateDay = actuDate.toLocaleString('en-us', {weekday:'short'}) // get day
+  var dateUtc = actuDate.toUTCString();
+  res.json({unix: newDateTimestamp, utc: dateUtc});
 });
 
 
